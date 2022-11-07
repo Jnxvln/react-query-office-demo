@@ -1,8 +1,13 @@
 import { fetchPosts } from "../api/posts/postApi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toTitleCase } from '../util/utils'
-import ComponentError from "../components/errors/ComponentError"
+import ComponentError from "../components/errors/ComponentError";
+import SiteDialog from "../components/SiteDialog";
+import Post from "../components/posts/Post";
+import PostForm from "../components/posts/PostForm";
 import Spinner from "../components/layout/Spinner";
+import styles from "../styles/Posts.module.scss";
+// PrimeReact Components
+import { Button } from "primereact/button";
 
 export default function Posts() {
   const queryClient = useQueryClient();
@@ -11,29 +16,26 @@ export default function Posts() {
     staleTime: 6000,
   });
 
-  const renderError = () => (
-    <div style={{ padding: "1em" }}>
-      <div style={{ fontWeight: "bold" }}>Error Loading Posts</div>
-      <div style={{ fontWeight: "bold" }}>
-        Reason: <span style={{ color: "red" }}>{error.message}</span>
-      </div>
-    </div>
-  );
-
   return (
     <div id="page-posts">
       <header>
-        <h2 style={{ margin: 0 }}>Posts</h2>
+        <h1 style={{ margin: 0, textAlign: "center" }}>Posts</h1>
       </header>
+
+      {/* <Button label="New Post" icon="pi pi-plus" iconPos="left" className="p-button-sm" /> */}
+      <PostForm />
+
       <div>
         {isLoading ? (
           <Spinner />
         ) : isError ? (
           <ComponentError error={error} />
         ) : (
-          <ul style={{ marginTop: "1em" }}>
+          <ul style={{ marginTop: "1em" }} className={styles.postsList}>
             {data?.map((post) => (
-              <li>{toTitleCase(post.title)}</li>
+              <li key={post.id} className={styles.postsListItem}>
+                <Post post={post} />
+              </li>
             ))}
           </ul>
         )}

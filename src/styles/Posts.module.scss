@@ -1,0 +1,38 @@
+// #region POST LIST & INDIVIDUAL POSTS
+.postsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4em;
+  padding: 0;
+}
+
+.postsListItem {
+  list-style: none;
+  //   border: 2px solid rgb(255, 216, 143);
+}
+
+// .postItemWrapper {
+// }
+
+.postHeader {
+  background-color: rgb(51, 69, 117);
+  padding: 0.4em 0;
+  padding-left: 0.6em;
+}
+
+.postTitle {
+  margin: 0;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+}
+
+.postBody {
+  background-color: rgb(225, 237, 243);
+  white-space: pre;
+  padding: 0.6em;
+}
+// #endregion
+
+// #region POST FORM
+
+// #endregion
