@@ -22,14 +22,41 @@ body {
 
 // #region SITE STYLES
 #site-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
 }
 
 #site-header {
+  background-color: $site-header-bgcolor;
+}
+
+#site-title {
+  margin: 0;
+  padding: 2em 0;
+  text-align: center;
+  color: $site-header-title-color;
 }
 
 #site-main {
 }
 
 #site-footer {
+  background-color: $site-footer-bgcolor;
+}
+
+#site-copyright {
+  color: white;
+  text-align: center;
+  padding: 3em 0;
+}
+// #endregion
+
+// #region POSTS
+#page-landing,
+#page-about,
+#page-posts {
+  padding: 3em;
 }
 // #endregion
