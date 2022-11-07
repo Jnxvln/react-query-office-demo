@@ -17,19 +17,8 @@ export default function Posts() {
     <div>
       <header>
         <h2>Posts</h2>
-
-        {isError ? (
-          renderError()
-        ) : isLoading ? (
-          renderLoading
-        ) : (
-          <ul>
-            {data?.map((post) => (
-              <li>{post.title}</li>
-            ))}
-          </ul>
-        )}
       </header>
+      <div>{isError && renderError()}</div>
     </div>
   );
 }
