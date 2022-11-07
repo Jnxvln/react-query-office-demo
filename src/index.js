@@ -12,6 +12,7 @@ import "primeicons/primeicons.css"; //icons
 // Import Routes
 import App from "./App";
 import About from "./pages/About";
+import Posts from "./pages/Posts";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "posts",
+        element: <Posts />,
       },
     ],
   },
