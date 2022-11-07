@@ -1,0 +1,15 @@
+.error {
+  padding: 1em;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.reason {
+  font-weight: bold;
+}
+
+.message, .message * {
+  color: red;
+}

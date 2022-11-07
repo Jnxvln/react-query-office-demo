@@ -1,5 +1,7 @@
 import { fetchPosts } from "../api/posts/postApi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toTitleCase } from '../util/utils'
+import ComponentError from "../components/errors/ComponentError"
 import Spinner from "../components/layout/Spinner";
 
 export default function Posts() {
@@ -18,10 +20,6 @@ export default function Posts() {
     </div>
   );
 
-  const toTitleCase = (string) => {
-    return string[0].toUpperCase() + string.substring(1);
-  };
-
   return (
     <div id="page-posts">
       <header>
@@ -31,7 +29,7 @@ export default function Posts() {
         {isLoading ? (
           <Spinner />
         ) : isError ? (
-          renderError()
+          <ComponentError error={error} />
         ) : (
           <ul style={{ marginTop: "1em" }}>
             {data?.map((post) => (
