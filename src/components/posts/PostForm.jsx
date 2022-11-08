@@ -1,97 +1,85 @@
 import { useState } from "react";
-import { useFormik } from "formik";
-import { classNames } from "primereact/utils";
-import SiteDialog from "../SiteDialog";
+import { Dialog } from "primereact/dialog";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // PrimeReact Components
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
+// Data
+import { createPost } from "../../api/posts/postApi";
+import { toast } from "react-toastify";
 import styles from "../../styles/Posts.module.scss";
 
 function PostForm() {
+  const initialState = {
+    title: "",
+    body: "",
+  };
   const [visible, setVisible] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState(initialState);
 
-  const onApprove = (e) => {
-    console.log("Post Form APPROVING");
-  };
+  const { title, body } = formData;
 
-  const onReject = (e) => {
-    console.log("Post Form REJECTING");
-  };
+  // Access the client
+  const queryClient = useQueryClient();
 
-  //   const onSubmit = (e) => {
-  //     e.preventDefault();
-  //   };
-
-  const formik = useFormik({
-    initialValues: {
-      title: "",
-      body: "",
+  // Mutations
+  const mutationAddPost = useMutation({
+    mutationFn: () => createPost(formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      onCancel();
+      toast.success("Post created!");
     },
-    validate: (data) => {
-      let errors = {};
-
-      if (!data.title) {
-        errors.title = "Title is required";
-      }
-
-      if (!data.body) {
-        errors.body = "Body is required";
-      }
-
-      return errors;
-    },
-    onSubmit: (data) => {
-      setFormData(data);
-      formik.resetForm();
-    },
+    onError: (error) => toast.error(error.message),
   });
 
-  const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
-  const getFormErrorMessage = (name) => {
-    return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
+  const onCancel = (e) => {
+    setVisible(false);
+    setFormData(initialState);
   };
 
-  const DialogContent = () => (
-    <div className="card">
-      <form onSubmit={formik.handleSubmit} style={{ padding: "1.5em" }}>
-        <div className="field" style={{ marginBottom: "2em" }}>
-          <span className="p-float-label">
-            <InputText
-              id="postform-title"
-              name="title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              style={{ width: "100%" }}
-              className={classNames({ "p-invalid": isFormFieldValid("title") })}
-              autoFocus
-              required
-            />
-            <label htmlFor="postform-title">Title</label>
-          </span>
-          {getFormErrorMessage("title")}
-        </div>
+  const onChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-        <div className="field">
-          <span className="p-float-label">
-            <InputTextarea
-              id="postform-body"
-              name="body"
-              value={formik.values.body}
-              onChange={formik.handleChange}
-              rows={4}
-              style={{ width: "100%" }}
-              className={classNames({ "p-invalid": isFormFieldValid("body") })}
-              required
-            />
-            <label htmlFor="postform-body">Body</label>
-          </span>
-          {getFormErrorMessage("body")}
-        </div>
-      </form>
-    </div>
-  );
+  const onSubmit = (e) => {
+    e.preventDefault();
+    mutationAddPost.mutate();
+  };
+
+  const header = () => {
+    return (
+      <header>
+        <h3 style={{ margin: 0 }}>Dialog Title</h3>
+      </header>
+    );
+  };
+
+  const footer = () => {
+    return (
+      <div>
+        <Button
+          label="Cancel"
+          icon="pi pi-times"
+          onClick={() => onCancel()}
+          className="p-button-text"
+          tabIndex={-1}
+        />
+
+        <Button
+          type="submit"
+          form="postForm"
+          label="Save"
+          disabled={mutationAddPost.isLoading}
+          icon="pi pi-save"
+        />
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -100,21 +88,55 @@ function PostForm() {
         icon="pi pi-plus"
         iconPos="left"
         className="p-button-sm"
+        disabled={mutationAddPost.isLoading}
         onClick={() => setVisible(true)}
       />
 
-      <SiteDialog
-        title="Dialog Title"
-        content={<DialogContent />}
-        activatorLabel="Click Me"
-        activatorIcon="pi pi-pencil"
-        dialogApproveLabel="Save"
-        dialogRejectLabel="Cancel"
-        onApprove={onApprove}
-        onReject={onReject}
-        isSubmitButton={true}
-        onSubmit={formik.handleSubmit}
-      />
+      <Dialog
+        visible={visible}
+        header={header}
+        footer={footer}
+        onHide={onCancel}
+        style={{ minWidth: "50vw" }}
+      >
+        <form id="postForm" name="postForm" onSubmit={onSubmit} style={{ padding: "1.5em" }}>
+          {/* TITLE */}
+          <div className="field" style={{ marginBottom: "2em" }}>
+            <span className="p-float-label">
+              <InputText
+                id="postform-title"
+                name="title"
+                value={title}
+                onChange={onChange}
+                style={{ width: "100%" }}
+                autoFocus
+                required
+              />
+              <label htmlFor="postform-title">
+                Title <strong style={{ color: "red" }}>*</strong>
+              </label>
+            </span>
+          </div>
+
+          {/* BODY */}
+          <div className="field">
+            <span className="p-float-label">
+              <InputTextarea
+                id="postform-body"
+                name="body"
+                value={body}
+                onChange={onChange}
+                rows={4}
+                style={{ width: "100%" }}
+                required
+              />
+              <label htmlFor="postform-body">
+                Body <strong style={{ color: "red" }}>*</strong>
+              </label>
+            </span>
+          </div>
+        </form>
+      </Dialog>
     </div>
   );
 }
